@@ -21,17 +21,17 @@ import java.util.List;
 @MethodsReturnNonnullByDefault
 public class CommandCrosshair implements ICommand {
     @Override
-    public String getCommandName() {
+    public String getName() {
         return "crosshair";
     }
 
     @Override
-    public String getCommandUsage(ICommandSender sender) {
+    public String getUsage(ICommandSender sender) {
         return "/crosshair";
     }
 
     @Override
-    public List<String> getCommandAliases() {
+    public List<String> getAliases() {
         return new ArrayList<>();
     }
 
@@ -46,7 +46,7 @@ public class CommandCrosshair implements ICommand {
     }
 
     @Override
-    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos pos) {
+    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos pos) {
         return new ArrayList<>();
     }
 

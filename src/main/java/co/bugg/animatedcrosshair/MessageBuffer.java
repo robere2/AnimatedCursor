@@ -50,11 +50,11 @@ public class MessageBuffer extends Thread {
     @Override
     public void run() {
         while(!Thread.currentThread().isInterrupted()) {
-            EntityPlayerSP player = Minecraft.getMinecraft().thePlayer;
+            EntityPlayerSP player = Minecraft.getMinecraft().player;
 
             try {
                 if(size() > 0 && player != null) {
-                    player.addChatMessage(pull());
+                    player.sendMessage(pull());
                 }
 
                 Thread.sleep(100);
