@@ -141,7 +141,15 @@ public class AnimatedCrosshair {
     public void postInit(FMLPostInitializationEvent event) {
         // Add the custom resource pack we've created to the list of registered packs
         try {
-            Field defaultResourcePacksField = Minecraft.class.getDeclaredField("field_110449_ao");
+            Field defaultResourcePacksField;
+            try {
+                // Try to get the field for the obfuscated "defaultResourcePacks" field
+                defaultResourcePacksField = Minecraft.class.getDeclaredField("field_110449_ao");
+            } catch(NoSuchFieldException e) {
+                // Obfuscated name wasn't found. Let's try the deobfuscated name.
+                defaultResourcePacksField = Minecraft.class.getDeclaredField("defaultResourcePacks");
+            }
+
             defaultResourcePacksField.setAccessible(true);
             List<IResourcePack> defaultResourcePacks = (List<IResourcePack>) defaultResourcePacksField.get(Minecraft.getMinecraft());
 
