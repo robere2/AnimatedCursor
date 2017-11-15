@@ -25,8 +25,8 @@ public class AnimatedCrosshairEventHandler {
         if(
                 event.type == RenderGameOverlayEvent.ElementType.CROSSHAIRS &&
                 AnimatedCrosshair.INSTANCE.enabled &&
-                new File(ConfigUtil.assetsRoot + AnimatedCrosshair.INSTANCE.config.getCurrentCrosshairName() + ".png").exists() &&
-                new File(ConfigUtil.assetsRoot + AnimatedCrosshair.INSTANCE.config.getCurrentCrosshairName() + ".properties").exists()
+                new File(ConfigUtil.assetsRoot + AnimatedCrosshair.INSTANCE.config.getCurrentCrosshairName().toLowerCase() + ".png").exists() &&
+                new File(ConfigUtil.assetsRoot + AnimatedCrosshair.INSTANCE.config.getCurrentCrosshairName().toLowerCase() + ".properties").exists()
             ) {
 
             GuiIngame gui = Minecraft.getMinecraft().ingameGUI;
@@ -40,7 +40,7 @@ public class AnimatedCrosshairEventHandler {
             double scale = AnimatedCrosshair.INSTANCE.config.getCurrentProperties().crosshairScale;
             int[] coords = AnimatedCrosshair.INSTANCE.calculateCoords(AnimatedCrosshair.INSTANCE.frame);
 
-            Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation(Reference.MOD_ID, AnimatedCrosshair.INSTANCE.config.getCurrentCrosshairName() + ".png"));
+            Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation(Reference.MOD_ID, AnimatedCrosshair.INSTANCE.config.getCurrentCrosshairName().toLowerCase() + ".png"));
             GlStateManager.scale(scale, scale, scale);
 
             if(AnimatedCrosshair.INSTANCE.config.getCurrentProperties().negativeColor) GlStateManager.tryBlendFuncSeparate(775, 769, 1, 0);

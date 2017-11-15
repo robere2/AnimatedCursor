@@ -79,6 +79,9 @@ public class ConfigUtil {
         defaultCrosshairs.add("wow");
         defaultCrosshairs.add("zoom_square");
         defaultCrosshairs.add("rainbow");
+        defaultCrosshairs.add("blue_circle");
+        defaultCrosshairs.add("shapeshift_box");
+        defaultCrosshairs.add("triangle_illusion");
 
         final String resourceRoot = "/default/";
 
