@@ -38,7 +38,7 @@ public class MessageBuffer extends Thread {
     }
 
     public IChatComponent format(String message) {
-        IChatComponent component = new ChatComponentText(new ChatComponentTranslation("animatedcrosshair.chat.prefix").getUnformattedText() + " ");
+        IChatComponent component = new ChatComponentTranslation("animatedcrosshair.chat.prefix").appendText(" ");
         component.setChatStyle(new ChatStyle().setColor(EnumChatFormatting.DARK_AQUA));
 
         component.appendSibling(new ChatComponentText(message).setChatStyle(new ChatStyle().setColor(EnumChatFormatting.RESET)));

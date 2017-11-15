@@ -32,9 +32,7 @@ public class CommandCrosshair implements ICommand {
 
     @Override
     public void processCommand(ICommandSender sender, String[] args) throws CommandException {
-       new TickDelay(() -> {
-           Minecraft.getMinecraft().displayGuiScreen(new ConfigGui());
-       }, 1);
+       new TickDelay(() -> Minecraft.getMinecraft().displayGuiScreen(new ConfigGui()), 1);
     }
 
     @Override
