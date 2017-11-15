@@ -1,19 +1,24 @@
 package co.bugg.animatedcrosshair.command;
 
-import co.bugg.animatedcrosshair.gui.ConfigGui;
 import co.bugg.animatedcrosshair.TickDelay;
+import co.bugg.animatedcrosshair.gui.ConfigGui;
+import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.util.BlockPos;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.BlockPos;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Command to open the ConfigGui class GUI
  */
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 public class CommandCrosshair implements ICommand {
     @Override
     public String getCommandName() {
@@ -31,20 +36,18 @@ public class CommandCrosshair implements ICommand {
     }
 
     @Override
-    public void processCommand(ICommandSender sender, String[] args) throws CommandException {
-       new TickDelay(() -> {
-           Minecraft.getMinecraft().displayGuiScreen(new ConfigGui());
-       }, 1);
+    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+       new TickDelay(() -> Minecraft.getMinecraft().displayGuiScreen(new ConfigGui()), 1);
     }
 
     @Override
-    public boolean canCommandSenderUseCommand(ICommandSender sender) {
+    public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
         return true;
     }
 
     @Override
-    public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos) {
-        return null;
+    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos pos) {
+        return new ArrayList<>();
     }
 
     @Override

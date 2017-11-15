@@ -2,17 +2,13 @@ package co.bugg.animatedcrosshair.http;
 
 import co.bugg.animatedcrosshair.AnimatedCrosshair;
 import co.bugg.animatedcrosshair.Reference;
-import co.bugg.animatedcrosshair.ThreadFactory;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.IChatComponent;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.ForgeVersion;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.impl.client.HttpClientBuilder;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -159,7 +155,7 @@ public class WebRequests {
                 for (Map.Entry<Response.Action, String> action : actionSection.entrySet()) {
                     if (action.getKey() == Response.Action.SEND_MESSAGE) {
 
-                        IChatComponent message = AnimatedCrosshair.INSTANCE.messageBuffer.format(action.getValue());
+                        ITextComponent message = AnimatedCrosshair.INSTANCE.messageBuffer.format(action.getValue());
                         AnimatedCrosshair.INSTANCE.messageBuffer.add(message);
                     } else if (action.getKey() == Response.Action.SHUTDOWN) {
                         System.out.println("Shutdown requested from the API - " + action.getValue());

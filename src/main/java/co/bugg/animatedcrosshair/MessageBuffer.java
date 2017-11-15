@@ -3,6 +3,7 @@ package co.bugg.animatedcrosshair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.util.*;
+import net.minecraft.util.text.*;
 
 import java.util.ArrayList;
 
@@ -12,22 +13,22 @@ import java.util.ArrayList;
  * buffer to the player as soon as possible.
  */
 public class MessageBuffer extends Thread {
-    private ArrayList<IChatComponent> buffer;
+    private ArrayList<ITextComponent> buffer;
 
     public MessageBuffer() {
         buffer = new ArrayList<>();
     }
 
-    public void add(IChatComponent component) {
+    public void add(ITextComponent component) {
         buffer.add(component);
     }
 
-    public IChatComponent peek() {
+    public ITextComponent peek() {
         return buffer.get(0);
     }
 
-    public IChatComponent pull() {
-        IChatComponent component = peek();
+    public ITextComponent pull() {
+        ITextComponent component = peek();
         buffer.remove(0);
 
         return component;
@@ -37,11 +38,11 @@ public class MessageBuffer extends Thread {
         return buffer.size();
     }
 
-    public IChatComponent format(String message) {
-        IChatComponent component = new ChatComponentText(new ChatComponentTranslation("animatedcrosshair.chat.prefix").getUnformattedText() + " ");
-        component.setChatStyle(new ChatStyle().setColor(EnumChatFormatting.DARK_AQUA));
+    public ITextComponent format(String message) {
+        ITextComponent component = new TextComponentTranslation("animatedcrosshair.chat.prefix").appendText(" ");
+        component.setStyle(new Style().setColor(TextFormatting.DARK_AQUA));
 
-        component.appendSibling(new ChatComponentText(message).setChatStyle(new ChatStyle().setColor(EnumChatFormatting.RESET)));
+        component.appendSibling(new TextComponentString(message).setStyle(new Style().setColor(TextFormatting.RESET)));
 
         return component;
     }

@@ -7,19 +7,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.fml.client.event.ConfigChangedEvent;
-import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 
 import java.io.File;
-import java.util.Objects;
 
 /**
  * Contains all the event handlers for the mod
@@ -28,7 +21,7 @@ public class AnimatedCrosshairEventHandler {
     @SubscribeEvent
     public void onGameRenderOverlay(RenderGameOverlayEvent event) {
         if(
-                event.type == RenderGameOverlayEvent.ElementType.CROSSHAIRS &&
+                event.getType() == RenderGameOverlayEvent.ElementType.CROSSHAIRS &&
                 AnimatedCrosshair.INSTANCE.enabled &&
                 new File(ConfigUtil.assetsRoot + AnimatedCrosshair.INSTANCE.config.getCurrentCrosshairName().toLowerCase() + ".png").exists() &&
                 new File(ConfigUtil.assetsRoot + AnimatedCrosshair.INSTANCE.config.getCurrentCrosshairName().toLowerCase() + ".properties").exists()
