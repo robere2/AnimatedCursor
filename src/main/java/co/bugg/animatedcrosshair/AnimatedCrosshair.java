@@ -9,7 +9,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.resources.FolderResourcePack;
 import net.minecraft.client.resources.IResourcePack;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
@@ -31,7 +30,8 @@ import java.util.List;
         modid = Reference.MOD_ID,
         name = Reference.MOD_NAME,
         version = Reference.VERSION,
-        clientSideOnly = true
+        clientSideOnly = true,
+        acceptedMinecraftVersions = Reference.ACCEPTED_VERSIONS
 )
 public class AnimatedCrosshair {
 
