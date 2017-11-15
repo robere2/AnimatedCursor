@@ -1,0 +1,13 @@
+[
+{
+  "modid": "animatedcrosshair",
+  "name": "Animated Crosshair",
+  "description": "Animate your crosshair in Minecraft",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["bugfroggy"],
+  "logoFile": ""
+}
+]
