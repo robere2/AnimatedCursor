@@ -159,13 +159,19 @@ public class TechnicalGui extends GuiScreen {
     @ParametersAreNonnullByDefault
     public class TechnicalGuiResponder implements GuiPageButtonList.GuiResponder {
 
+        /**
+         * Called every time the value of a boolean button changes
+         * Unused in this Minecraft mod
+         * @param id ID of the button
+         * @param value Value of the button
+         */
         @Override
         public void setEntryValue(int id, boolean value) {
 
         }
 
         /**
-         * Called every tick that the mouse button is down
+         * Called every tick that the mouse button is down on a slider
          * @param id ID of the slider/button
          * @param value value of the slider/button
          */
@@ -180,6 +186,12 @@ public class TechnicalGui extends GuiScreen {
             }
         }
 
+        /**
+         * Called every time the value of a text box changes
+         * Unused in this Minecraft mod
+         * @param id ID of the text box
+         * @param value Value of the text box
+         */
         @Override
         public void setEntryValue(int id, String value) {
 
