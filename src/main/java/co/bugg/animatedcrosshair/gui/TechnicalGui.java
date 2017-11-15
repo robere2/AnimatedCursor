@@ -9,6 +9,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiPageButtonList;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiSlider;
+import net.minecraft.util.ChatComponentTranslation;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -69,9 +70,9 @@ public class TechnicalGui extends GuiScreen {
         drawDefaultBackground();
         super.drawScreen(mouseX, mouseY, partialTicks);
 
-        drawCenteredString(fontRendererObj, Reference.MOD_NAME + " Configuration", width / 2, height / 2 - (sliderMargin + sliderHeight) * 3, 0xFFFFFF);
+        drawCenteredString(fontRendererObj, Reference.MOD_NAME + " " + new ChatComponentTranslation("animatedcrosshair.config.configuration").getUnformattedText(), width / 2, height / 2 - (sliderMargin + sliderHeight) * 3, 0xFFFFFF);
         drawCenteredString(fontRendererObj, AnimatedCrosshair.INSTANCE.credits, width / 2, height - 10, 0xFFFFFF);
-        drawCenteredString(fontRendererObj, "Precise values can be edited in", width / 2, (int) (height / 2 + (sliderMargin + sliderHeight) * 1.6), 0xFFFFFF);
+        drawCenteredString(fontRendererObj, new ChatComponentTranslation("animatedcrosshair.config.precisevalues").getUnformattedText(), width / 2, (int) (height / 2 + (sliderMargin + sliderHeight) * 1.6), 0xFFFFFF);
         drawCenteredString(fontRendererObj, ".minecraft/" + ConfigUtil.assetsRoot, width / 2, (int) (height / 2 + (sliderMargin + sliderHeight) * 2), 0xFFFFFF);
     }
 
@@ -84,22 +85,22 @@ public class TechnicalGui extends GuiScreen {
         TechnicalGuiResponder responder = new TechnicalGuiResponder();
         TechnicalGuiFormatHelper formatHelper = new TechnicalGuiFormatHelper();
 
-        buttonList.add(new GuiSlider(responder, buttonId, width / 2 - sliderWidth / 2, height / 2 - sliderHeight / 2 + (sliderHeight + sliderMargin) * (buttonId - 2), "Scale", 0.1F, 10.0F, scale, formatHelper));
+        buttonList.add(new GuiSlider(responder, buttonId, width / 2 - sliderWidth / 2, height / 2 - sliderHeight / 2 + (sliderHeight + sliderMargin) * (buttonId - 2), new ChatComponentTranslation("animatedcrosshair.properties.scale").getUnformattedText(), 0.1F, 10.0F, scale, formatHelper));
         buttonId++;
-        buttonList.add(new GuiSlider(responder, buttonId, width / 2 - sliderWidth / 2, height / 2 - sliderHeight / 2 + (sliderHeight + sliderMargin) * (buttonId - 2), "Framerate", 0F, 100F, frameRate, formatHelper));
+        buttonList.add(new GuiSlider(responder, buttonId, width / 2 - sliderWidth / 2, height / 2 - sliderHeight / 2 + (sliderHeight + sliderMargin) * (buttonId - 2), new ChatComponentTranslation("animatedcrosshair.properties.framerate").getUnformattedText(), 0F, 100F, frameRate, formatHelper));
         buttonId++;
-        buttonList.add(new GuiSlider(responder, buttonId, width / 2 - sliderWidth / 2, height / 2 - sliderHeight / 2 + (sliderHeight + sliderMargin) * (buttonId - 2), "Frame Count", 1F, 256F, frameCount, formatHelper));
+        buttonList.add(new GuiSlider(responder, buttonId, width / 2 - sliderWidth / 2, height / 2 - sliderHeight / 2 + (sliderHeight + sliderMargin) * (buttonId - 2), new ChatComponentTranslation("animatedcrosshair.properties.framecount").getUnformattedText(), 1F, 256F, frameCount, formatHelper));
         buttonId++;
-        buttonList.add(new GuiButton(buttonId, width / 2 - sliderWidth / 2, height / 2 - sliderHeight / 2 + (sliderHeight + sliderMargin) * (buttonId - 2), sliderWidth, sliderHeight, "Negative Color: " + (negativeColor ? "Enabled" : "Disabled")));
+        buttonList.add(new GuiButton(buttonId, width / 2 - sliderWidth / 2, height / 2 - sliderHeight / 2 + (sliderHeight + sliderMargin) * (buttonId - 2), sliderWidth, sliderHeight, new ChatComponentTranslation("animatedcrosshair.properties.negativecolor").getUnformattedText() + ": " + (negativeColor ? new ChatComponentTranslation("animatedcrosshair.config.enabled").getUnformattedText() : new ChatComponentTranslation("animatedcrosshair.config.disabled").getUnformattedText())));
         buttonId++;
-        buttonList.add(new GuiButton(buttonId, width / 2 - sliderWidth / 2, height / 2 - sliderHeight / 2 + (sliderHeight + sliderMargin) * (buttonId - 1), sliderWidth, sliderHeight, "Save"));
+        buttonList.add(new GuiButton(buttonId, width / 2 - sliderWidth / 2, height / 2 - sliderHeight / 2 + (sliderHeight + sliderMargin) * (buttonId - 1), sliderWidth, sliderHeight, new ChatComponentTranslation("animatedcrosshair.config.save").getUnformattedText()));
     }
 
     @Override
     protected void actionPerformed(GuiButton button) throws IOException {
         super.actionPerformed(button);
 
-        if(button.displayString.equalsIgnoreCase("Save")) {
+        if(button.displayString.equalsIgnoreCase(new ChatComponentTranslation("animatedcrosshair.config.save").getUnformattedText())) {
             // Convert the properties into an object
             Properties properties = new Properties();
             properties.negativeColor = negativeColor;
@@ -117,14 +118,18 @@ public class TechnicalGui extends GuiScreen {
 
             Minecraft.getMinecraft().displayGuiScreen(new ConfigGui(name));
 
-        } else if(button.displayString.contains("Negative Color")) {
+        } else if(button.displayString.contains(new ChatComponentTranslation("animatedcrosshair.properties.negativecolor").getUnformattedText())) {
             // Swap the "Negative Color" value
             negativeColor = !negativeColor;
-            button.displayString = "Negative Color: " + (negativeColor ? "Enabled" : "Disabled");
+            button.displayString = new ChatComponentTranslation("animatedcrosshair.properties.negativecolor").getUnformattedText() + ": " + (negativeColor ? new ChatComponentTranslation("animatedcrosshair.config.enabled").getUnformattedText() : new ChatComponentTranslation("animatedcrosshair.config.disabled").getUnformattedText());
         }
     }
 
     public class TechnicalGuiFormatHelper implements GuiSlider.FormatHelper {
+        final String scale = new ChatComponentTranslation("animatedcrosshair.properties.scale").getUnformattedText();
+        final String framerate = new ChatComponentTranslation("animatedcrosshair.properties.framerate").getUnformattedText();
+        final String framecount = new ChatComponentTranslation("animatedcrosshair.properties.framecount").getUnformattedText();
+
         /**
          * Text that should be displayed on the slider
          * @param id ID of the slider
@@ -135,11 +140,11 @@ public class TechnicalGui extends GuiScreen {
         @Override
         public String getText(int id, String name, float value) {
 
-            if(name.equalsIgnoreCase("Scale")) {
+            if(name.equalsIgnoreCase(scale)) {
                 return name + ": " + new DecimalFormat("#.##").format(value);
-            } else if(name.equalsIgnoreCase("Framerate")) {
+            } else if(name.equalsIgnoreCase(framerate)) {
                 return name + ": " + new DecimalFormat(value < 10 ? "#.#" : "#").format(value);
-            } else if(name.equalsIgnoreCase("Frame Count")) {
+            } else if(name.equalsIgnoreCase(framecount)) {
                 return name + ": " + (int) value;
             } else {
                 return name + ": " + new DecimalFormat("#.##").format(value);
@@ -164,11 +169,11 @@ public class TechnicalGui extends GuiScreen {
          */
         @Override
         public void onTick(int id, float value) {
-            if(buttonList.get(id).displayString.contains("Scale")) {
+            if(buttonList.get(id).displayString.contains(new ChatComponentTranslation("animatedcrosshair.properties.scale").getUnformattedText())) {
                 scale = value;
-            } else if(buttonList.get(id).displayString.contains("Framerate")) {
+            } else if(buttonList.get(id).displayString.contains(new ChatComponentTranslation("animatedcrosshair.properties.framerate").getUnformattedText())) {
                 frameRate = value;
-            } else if(buttonList.get(id).displayString.contains("Frame Count")) {
+            } else if(buttonList.get(id).displayString.contains(new ChatComponentTranslation("animatedcrosshair.properties.framecount").getUnformattedText())) {
                 frameCount = (int) value;
             }
         }

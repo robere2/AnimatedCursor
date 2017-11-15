@@ -1,0 +1,17 @@
+animatedcrosshair.arrow.left=«
+animatedcrosshair.arrow.right=»
+
+animatedcrosshair.config.save=Save
+animatedcrosshair.config.configuration=Configuration
+animatedcrosshair.config.configure=Configure
+animatedcrosshair.config.enabled=Enabled
+animatedcrosshair.config.disabled=Disabled
+
+animatedcrosshair.config.precisevalues=Precise values can be edited in
+
+animatedcrosshair.chat.prefix=[AnimatedCrosshair]
+
+animatedcrosshair.properties.negativecolor=Negative Color
+animatedcrosshair.properties.scale=Scale
+animatedcrosshair.properties.framerate=Framerate
+animatedcrosshair.properties.framecount=Frame Count

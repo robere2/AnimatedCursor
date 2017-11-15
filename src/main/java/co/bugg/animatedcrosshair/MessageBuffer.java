@@ -2,10 +2,7 @@ package co.bugg.animatedcrosshair;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChatStyle;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.IChatComponent;
+import net.minecraft.util.*;
 
 import java.util.ArrayList;
 
@@ -41,7 +38,7 @@ public class MessageBuffer extends Thread {
     }
 
     public IChatComponent format(String message) {
-        IChatComponent component = new ChatComponentText("[AnimatedCrosshair] ");
+        IChatComponent component = new ChatComponentText(new ChatComponentTranslation("animatedcrosshair.chat.prefix").getUnformattedText() + " ");
         component.setChatStyle(new ChatStyle().setColor(EnumChatFormatting.DARK_AQUA));
 
         component.appendSibling(new ChatComponentText(message).setChatStyle(new ChatStyle().setColor(EnumChatFormatting.RESET)));

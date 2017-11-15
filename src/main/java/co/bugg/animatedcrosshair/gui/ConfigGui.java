@@ -5,6 +5,7 @@ import co.bugg.animatedcrosshair.Reference;
 import co.bugg.animatedcrosshair.config.ConfigUtil;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.util.ChatComponentTranslation;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
@@ -55,7 +56,7 @@ public class ConfigGui extends GuiScreen {
         drawDefaultBackground();
         super.drawScreen(mouseX, mouseY, partialTicks);
 
-        drawCenteredString(fontRendererObj, Reference.MOD_NAME + " Configuration", width / 2, height / 2 - (buttonHeight + buttonMargin) * 2, 0xFFFFFF);
+        drawCenteredString(fontRendererObj, Reference.MOD_NAME + " " + new ChatComponentTranslation("animatedcrosshair.config.configuration").getUnformattedText(), width / 2, height / 2 - (buttonHeight + buttonMargin) * 2, 0xFFFFFF);
         drawCenteredString(fontRendererObj, AnimatedCrosshair.INSTANCE.credits, width / 2, height - 10, 0xFFFFFF);
     }
 
@@ -73,30 +74,24 @@ public class ConfigGui extends GuiScreen {
         int carouselWidth = buttonWidth - (arrowWidth + buttonMargin) * 2;
 
         // Add the arrow buttons. They cycle in the direction pressed
-        buttonList.add(new GuiButton(0, width / 2 - carouselWidth / 2 - arrowWidth - buttonMargin, height / 2 - buttonHeight / 2 - (buttonHeight + buttonMargin), arrowWidth, buttonHeight, "«"));
-        buttonList.add(new GuiButton(1, width / 2 + carouselWidth / 2 + buttonMargin, height / 2 - buttonHeight / 2 - (buttonHeight + buttonMargin), arrowWidth, buttonHeight, "»"));
+        buttonList.add(new GuiButton(0, width / 2 - carouselWidth / 2 - arrowWidth - buttonMargin, height / 2 - buttonHeight / 2 - (buttonHeight + buttonMargin), arrowWidth, buttonHeight, new ChatComponentTranslation("animatedcrosshair.arrow.left").getUnformattedText()));
+        buttonList.add(new GuiButton(1, width / 2 + carouselWidth / 2 + buttonMargin, height / 2 - buttonHeight / 2 - (buttonHeight + buttonMargin), arrowWidth, buttonHeight, new ChatComponentTranslation("animatedcrosshair.arrow.right").getUnformattedText()));
 
         // This button doesn't do anything. It simply shows the current theme
         buttonList.add(new GuiButton(2, width / 2 - carouselWidth / 2, height / 2 - buttonHeight / 2 -  (buttonHeight + buttonMargin), carouselWidth, buttonHeight, crosshairButtonPrefix + name));
 
         // This button pops up the TechnicalGui so you can edit crosshair properties
-        buttonList.add(new GuiButton(3, width / 2 - buttonWidth / 2, height / 2 - buttonHeight / 2, buttonWidth, buttonHeight, "Configure"));
+        buttonList.add(new GuiButton(3, width / 2 - buttonWidth / 2, height / 2 - buttonHeight / 2, buttonWidth, buttonHeight, new ChatComponentTranslation("animatedcrosshair.config.configure").getUnformattedText()));
 
         // This button saves the crosshair to be whatever name is on button 0
-        buttonList.add(new GuiButton(4, width / 2 - buttonWidth / 2, height / 2 - buttonHeight / 2 + (int) ((buttonHeight + buttonMargin) * 1.5), buttonWidth, buttonHeight,"Save"));
+        buttonList.add(new GuiButton(4, width / 2 - buttonWidth / 2, height / 2 - buttonHeight / 2 + (int) ((buttonHeight + buttonMargin) * 1.5), buttonWidth, buttonHeight,new ChatComponentTranslation("animatedcrosshair.config.save").getUnformattedText()));
     }
 
     @Override
     protected void actionPerformed(GuiButton button) throws IOException {
         super.actionPerformed(button);
 
-        /*
-        Button ID 0 = Carousel button
-        Button ID 1 = Configure button
-        Button ID 2 = Save button
-         */
-
-        if(button.id == 0) {
+        if(button.displayString.equalsIgnoreCase(new ChatComponentTranslation("animatedcrosshair.arrow.left").getUnformattedText())) {
             // Decrement the index to whatever the previous in the ArrayList is
             int currentIndex = crosshairDisplayNames.indexOf(name);
             currentIndex--;
@@ -109,7 +104,7 @@ public class ConfigGui extends GuiScreen {
                 name = crosshairDisplayNames.get(currentIndex);
                 buttonList.get(2).displayString = crosshairButtonPrefix + name;
             }
-        } else if(button.id == 1) {
+        } else if(button.displayString.equalsIgnoreCase(new ChatComponentTranslation("animatedcrosshair.arrow.right").getUnformattedText())) {
             // Increment the index to whatever the next in the ArrayList is
             int currentIndex = crosshairDisplayNames.indexOf(name);
             currentIndex++;
@@ -122,9 +117,9 @@ public class ConfigGui extends GuiScreen {
                 name = crosshairDisplayNames.get(currentIndex);
                 buttonList.get(2).displayString = crosshairButtonPrefix + name;
             }
-        } else if(button.id == 3) {
+        } else if(button.displayString.equalsIgnoreCase(new ChatComponentTranslation("animatedcrosshair.config.configure").getUnformattedText())) {
             mc.displayGuiScreen(new TechnicalGui(name));
-        } else if(button.id == 4) {
+        } else if(button.displayString.equalsIgnoreCase(new ChatComponentTranslation("animatedcrosshair.config.save").getUnformattedText())) {
             AnimatedCrosshair.INSTANCE.config.setCurrentCrosshairName(name).loadProperties();
             AnimatedCrosshair.INSTANCE.config.save();
 
