@@ -31,6 +31,7 @@ public class Response implements Serializable {
     public enum Action implements Serializable {
         SHUTDOWN,
         SEND_MESSAGE,
-        SYSTEM_OUT
+        SYSTEM_OUT,
+        SET_PING_INTERVAL
     }
 }

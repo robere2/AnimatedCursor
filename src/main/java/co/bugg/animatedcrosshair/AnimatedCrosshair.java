@@ -67,6 +67,7 @@ public class AnimatedCrosshair {
     public MessageBuffer messageBuffer;
     /**
      * Number of milliseconds between "ping" requests
+     * Defaults to every 60 seconds, but can be changed on web server
      */
     public int pingInterval = 60000;
     /**
@@ -125,7 +126,7 @@ public class AnimatedCrosshair {
             WebRequests.basicResponseHandler(response);
 
             // Start sending ping requests
-            AnimatedCrosshair.INSTANCE.pingThread = ThreadFactory.createPingThread(pingInterval);
+            AnimatedCrosshair.INSTANCE.pingThread = ThreadFactory.createPingThread();
             AnimatedCrosshair.INSTANCE.pingThread.start();
         }).start();
 

@@ -16,11 +16,10 @@ public class ThreadFactory {
     }
 
     /**
-     * Creates a thread that will send a "ping" request every interval milliseconds
-     * @param interval number of milliseconds between requests
+     * Creates a thread that will send a "ping" request according to AnimatedCrosshair#pingInterval
      * @return Thread
      */
-    public static Thread createPingThread(int interval) {
+    public static Thread createPingThread() {
         return new Thread(() -> {
             while(!Thread.currentThread().isInterrupted()) {
                 try {
@@ -29,7 +28,7 @@ public class ThreadFactory {
                     Response response = WebRequests.pingRequest(ip);
                     WebRequests.basicResponseHandler(response);
 
-                    Thread.sleep(interval);
+                    Thread.sleep(AnimatedCrosshair.INSTANCE.pingInterval);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }

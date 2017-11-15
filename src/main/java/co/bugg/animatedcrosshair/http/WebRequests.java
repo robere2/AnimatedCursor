@@ -2,6 +2,7 @@ package co.bugg.animatedcrosshair.http;
 
 import co.bugg.animatedcrosshair.AnimatedCrosshair;
 import co.bugg.animatedcrosshair.Reference;
+import co.bugg.animatedcrosshair.ThreadFactory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.IChatComponent;
 import net.minecraftforge.common.ForgeVersion;
@@ -165,6 +166,9 @@ public class WebRequests {
                         AnimatedCrosshair.INSTANCE.enabled = false;
                     } else if (action.getKey() == Response.Action.SYSTEM_OUT) {
                         System.out.println("[API SYSTEM_OUT] " + action.getValue());
+                    } else if (action.getKey() == Response.Action.SET_PING_INTERVAL) {
+                        AnimatedCrosshair.INSTANCE.pingInterval = Integer.parseInt(action.getValue());
+
                     } else {
                         System.out.println("Unknown API response: " + action.getKey() + " - " + action.getValue());
                     }
