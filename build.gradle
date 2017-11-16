@@ -22,7 +22,7 @@ plugins {
 */
 version = "1.0"
 group= "co.bugg.animatedcrosshair" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "AnimatedCrosshair"
+archivesBaseName = "AnimatedCrosshair1.12"
 
 targetCompatibility = sourceCompatibility = 1.8
 
