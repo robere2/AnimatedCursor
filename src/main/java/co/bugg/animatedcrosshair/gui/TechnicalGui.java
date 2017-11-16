@@ -63,8 +63,7 @@ public class TechnicalGui extends GuiScreen {
         } catch (IOException | JsonSyntaxException e) {
             e.printStackTrace();
             new TickDelay(() -> Minecraft.getMinecraft().displayGuiScreen(null), 0);
-            AnimatedCrosshair.INSTANCE.messageBuffer.add(AnimatedCrosshair.INSTANCE.messageBuffer.format("For some reason I can't access your properties file " +
-                    "right now, so you can't edit it!"));
+            AnimatedCrosshair.INSTANCE.messageBuffer.add(AnimatedCrosshair.INSTANCE.messageBuffer.format(new TextComponentTranslation("animatedcrosshair.error.readerror").getUnformattedText()));
         }
     }
 

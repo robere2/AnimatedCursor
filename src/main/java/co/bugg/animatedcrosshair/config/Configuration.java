@@ -98,11 +98,10 @@ public class Configuration implements Serializable {
      * @throws IOException Error reading or writing to file
      */
     public static Configuration load() throws IOException {
-        String defaultCrosshair = "zoom_square";
 
         if(!configFile.exists()) {
             return new Configuration()
-                    .setCurrentCrosshairName(defaultCrosshair)
+                    .setCurrentCrosshairName(defaultCrosshairName)
                     .loadProperties()
                     .save();
 
@@ -114,7 +113,7 @@ public class Configuration implements Serializable {
 
             // Check if the PNG file from the config doesnt exist
             if(!new File(ConfigUtil.assetsRoot + config.getCurrentCrosshairName() + ".png").exists()) {
-                config.setCurrentCrosshairName("zoom_square");
+                config.setCurrentCrosshairName(defaultCrosshairName);
             }
 
             return config.loadProperties().save();
