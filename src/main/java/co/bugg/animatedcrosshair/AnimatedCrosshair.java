@@ -14,7 +14,6 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -110,6 +109,7 @@ public class AnimatedCrosshair {
         }
 
         resourcePack = new FolderResourcePack(resourcePackRoot);
+        addResourcePack();
 
         MinecraftForge.EVENT_BUS.register(new AnimatedCrosshairEventHandler());
     }
@@ -135,34 +135,6 @@ public class AnimatedCrosshair {
         AnimatedCrosshair.INSTANCE.framerateThread.start();
 
         ClientCommandHandler.instance.registerCommand(new CommandCrosshair());
-    }
-
-    @EventHandler
-    public void postInit(FMLPostInitializationEvent event) {
-        // Add the custom resource pack we've created to the list of registered packs
-        try {
-            Field defaultResourcePacksField;
-            try {
-                // Try to get the field for the obfuscated "defaultResourcePacks" field
-                defaultResourcePacksField = Minecraft.class.getDeclaredField("field_110449_ao");
-            } catch(NoSuchFieldException e) {
-                // Obfuscated name wasn't found. Let's try the deobfuscated name.
-                defaultResourcePacksField = Minecraft.class.getDeclaredField("defaultResourcePacks");
-            }
-
-            defaultResourcePacksField.setAccessible(true);
-            List<IResourcePack> defaultResourcePacks = (List<IResourcePack>) defaultResourcePacksField.get(Minecraft.getMinecraft());
-
-            defaultResourcePacks.add(resourcePack);
-
-            defaultResourcePacksField.set(Minecraft.getMinecraft(), defaultResourcePacks);
-        } catch (IllegalAccessException | NoSuchFieldException e) {
-            System.out.println("Disabling the mod, as we can't add our custom resource pack.");
-            System.out.println("Please report this to @bugfroggy, providing this error log and this list: " + Arrays.toString(Minecraft.class.getDeclaredFields()));
-            enabled = false;
-            e.printStackTrace();
-        }
-
     }
 
     /**
@@ -199,5 +171,38 @@ public class AnimatedCrosshair {
         }
 
         return ip;
+    }
+
+    /**
+     * Add the resource pack object from this instance
+     * into the list of Minecraft resource packs
+     */
+    public void addResourcePack() {
+        // Add the custom resource pack we've created to the list of registered packs
+        try {
+            Field defaultResourcePacksField;
+            try {
+                // Try to get the field for the obfuscated "defaultResourcePacks" field
+                defaultResourcePacksField = Minecraft.class.getDeclaredField("field_110449_ao");
+            } catch(NoSuchFieldException e) {
+                // Obfuscated name wasn't found. Let's try the deobfuscated name.
+                defaultResourcePacksField = Minecraft.class.getDeclaredField("defaultResourcePacks");
+            }
+
+            defaultResourcePacksField.setAccessible(true);
+            List<IResourcePack> defaultResourcePacks = (List<IResourcePack>) defaultResourcePacksField.get(Minecraft.getMinecraft());
+
+            defaultResourcePacks.add(resourcePack);
+
+            defaultResourcePacksField.set(Minecraft.getMinecraft(), defaultResourcePacks);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            System.out.println("Disabling the mod, as we can't add our custom resource pack.");
+            System.out.println("Please report this to @bugfroggy, providing this error log and this list: " + Arrays.toString(Minecraft.class.getDeclaredFields()));
+            enabled = false;
+            e.printStackTrace();
+        }
+
+        // Refresh the resources of the game
+        Minecraft.getMinecraft().refreshResources();
     }
 }
