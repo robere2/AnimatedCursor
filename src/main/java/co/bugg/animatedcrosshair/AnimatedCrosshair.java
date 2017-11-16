@@ -14,7 +14,6 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -110,6 +109,7 @@ public class AnimatedCrosshair {
         }
 
         resourcePack = new FolderResourcePack(resourcePackRoot);
+        addResourcePack();
 
         MinecraftForge.EVENT_BUS.register(new AnimatedCrosshairEventHandler());
     }
@@ -137,8 +137,51 @@ public class AnimatedCrosshair {
         ClientCommandHandler.instance.registerCommand(new CommandCrosshair());
     }
 
-    @EventHandler
-    public void postInit(FMLPostInitializationEvent event) {
+    /**
+     * Calculate the coordinates of the specified frame in a
+     * 256x256 grid, assuming each item is 16x16.
+     * @param frame Frame to calculate
+     * @return int array, 0 mapping to X and 1 mapping to Y
+     */
+    public int[] calculateCoords(int frame) {
+        int[] array = new int[2];
+
+        int row = frame % 16;
+
+        int column = (int) Math.floor((double) frame / 16.0);
+
+        array[0] = row * 16;
+        array[1] = column * 16;
+
+        return array;
+    }
+
+    /**
+     * get whatever IP the player is currently on
+     * @return Current IP, "singleplayer" if single player, or null if undetermined
+     */
+    public String getCurrentIP() {
+        String ip;
+
+        if(Minecraft.getMinecraft().isSingleplayer()) {
+            ip = "singleplayer";
+        } else {
+            ServerData serverData = Minecraft.getMinecraft().getCurrentServerData();
+            if (serverData != null) {
+                ip = serverData.serverIP;
+            } else {
+                ip = "null";
+            }
+        }
+
+        return ip;
+    }
+
+    /**
+     * Add the resource pack object from this instance
+     * into the list of Minecraft resource packs
+     */
+    public void addResourcePack() {
         // Add the custom resource pack we've created to the list of registered packs
         try {
             Field defaultResourcePacksField;
@@ -163,41 +206,7 @@ public class AnimatedCrosshair {
             e.printStackTrace();
         }
 
-    }
-
-    /**
-     * Calculate the coordinates of the specified frame in a
-     * 256x256 grid, assuming each item is 16x16.
-     * @param frame Frame to calculate
-     * @return int array, 0 mapping to X and 1 mapping to Y
-     */
-    public int[] calculateCoords(int frame) {
-        int[] array = new int[2];
-
-        int row = frame % 16;
-
-        int column = (int) Math.floor((double) frame / 16.0);
-
-        array[0] = row * 16;
-        array[1] = column * 16;
-
-        return array;
-    }
-
-    public String getCurrentIP() {
-        String ip;
-
-        if(Minecraft.getMinecraft().isSingleplayer()) {
-            ip = "singleplayer";
-        } else {
-            ServerData serverData = Minecraft.getMinecraft().getCurrentServerData();
-            if (serverData != null) {
-                ip = serverData.serverIP;
-            } else {
-                ip = "null";
-            }
-        }
-
-        return ip;
+        // Refresh the resources of the game
+        Minecraft.getMinecraft().refreshResources();
     }
 }
