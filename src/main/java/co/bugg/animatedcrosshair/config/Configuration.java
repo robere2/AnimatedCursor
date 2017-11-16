@@ -2,6 +2,7 @@ package co.bugg.animatedcrosshair.config;
 
 import co.bugg.animatedcrosshair.AnimatedCrosshair;
 import com.google.gson.Gson;
+import net.minecraft.util.text.TextComponentTranslation;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -15,6 +16,8 @@ import java.nio.file.Paths;
  * Custom AnimatedCrosshair configuration
  */
 public class Configuration implements Serializable {
+    public static final String defaultCrosshairName = "zoom_square";
+
     /**
      * Where the configuration file is stored
      */
@@ -29,6 +32,11 @@ public class Configuration implements Serializable {
      */
     private Properties currentProperties;
 
+    public Configuration() throws IOException {
+        setCurrentCrosshairName(defaultCrosshairName);
+        loadProperties();
+    }
+
     /**
      * Getter for currentCrosshairName
      * @return currentCrosshairName
@@ -42,7 +50,10 @@ public class Configuration implements Serializable {
      * @param name New value
      * @return This configuration
      */
-    public Configuration setCurrentCrosshairName(String name) {
+    public Configuration setCurrentCrosshairName(String name) throws FileNotFoundException {
+        if(!new File(ConfigUtil.assetsRoot + name + ".properties").exists()) throw new FileNotFoundException("No properties file found!");
+        if(!new File(ConfigUtil.assetsRoot + name + ".png").exists()) throw new FileNotFoundException("No image file found!");
+
         currentCrosshairName = name;
         return this;
     }
@@ -91,7 +102,7 @@ public class Configuration implements Serializable {
 
         if(!configFile.exists()) {
             return new Configuration()
-                    .setCurrentCrosshairName("zoom_square")
+                    .setCurrentCrosshairName(defaultCrosshairName)
                     .loadProperties()
                     .save();
 
@@ -100,6 +111,11 @@ public class Configuration implements Serializable {
 
             final String configJson = new String(Files.readAllBytes(Paths.get(configFile.toURI())), StandardCharsets.UTF_8);
             Configuration config = gson.fromJson(configJson, Configuration.class);
+
+            // Check if the PNG file from the config doesnt exist
+            if(!new File(ConfigUtil.assetsRoot + config.getCurrentCrosshairName() + ".png").exists()) {
+                config.setCurrentCrosshairName(defaultCrosshairName);
+            }
 
             return config.loadProperties().save();
         }
@@ -114,7 +130,7 @@ public class Configuration implements Serializable {
         try {
             setCurrentProperties(ConfigUtil.getProperties(getCurrentCrosshairName()));
         } catch(FileNotFoundException e) {
-            AnimatedCrosshair.INSTANCE.messageBuffer.add(AnimatedCrosshair.INSTANCE.messageBuffer.format("The currently active crosshair does not have a properties file! It will not be rendered."));
+            AnimatedCrosshair.INSTANCE.messageBuffer.add(AnimatedCrosshair.INSTANCE.messageBuffer.format(new TextComponentTranslation("animatedcrosshair.error.invalidproperties").getUnformattedText()));
             e.printStackTrace();
         }
 
