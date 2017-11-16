@@ -3,6 +3,8 @@ package co.bugg.animatedcrosshair.gui;
 import co.bugg.animatedcrosshair.AnimatedCrosshair;
 import co.bugg.animatedcrosshair.Reference;
 import co.bugg.animatedcrosshair.config.ConfigUtil;
+import co.bugg.animatedcrosshair.config.Properties;
+import com.google.gson.JsonSyntaxException;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.ChatComponentTranslation;
@@ -120,8 +122,21 @@ public class ConfigGui extends GuiScreen {
         } else if(button.displayString.equalsIgnoreCase(new ChatComponentTranslation("animatedcrosshair.config.configure").getUnformattedText())) {
             mc.displayGuiScreen(new TechnicalGui(name));
         } else if(button.displayString.equalsIgnoreCase(new ChatComponentTranslation("animatedcrosshair.config.save").getUnformattedText())) {
-            AnimatedCrosshair.INSTANCE.config.setCurrentCrosshairName(name).loadProperties();
-            AnimatedCrosshair.INSTANCE.config.save();
+
+            try {
+                // Try to retrieve the properties here as
+                // opposed to using Configuration#loadProperties,
+                // just to make sure there isn't a JSON syntax error
+                Properties properties = ConfigUtil.getProperties(name);
+
+                AnimatedCrosshair.INSTANCE.config.setCurrentCrosshairName(name).setCurrentProperties(properties).save();
+            } catch(JsonSyntaxException e) {
+                AnimatedCrosshair.INSTANCE.messageBuffer.add(AnimatedCrosshair.INSTANCE.messageBuffer.format(new ChatComponentTranslation("animatedcrosshair.error.invalidproperties").getUnformattedText()));
+                e.printStackTrace();
+            } catch(IOException e) {
+                AnimatedCrosshair.INSTANCE.messageBuffer.add(AnimatedCrosshair.INSTANCE.messageBuffer.format(new ChatComponentTranslation("animatedcrosshair.error.readerror").getUnformattedText()));
+                e.printStackTrace();
+            }
 
             mc.displayGuiScreen(null);
         }

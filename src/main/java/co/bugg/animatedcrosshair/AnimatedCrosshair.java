@@ -5,10 +5,12 @@ import co.bugg.animatedcrosshair.config.ConfigUtil;
 import co.bugg.animatedcrosshair.config.Configuration;
 import co.bugg.animatedcrosshair.http.Response;
 import co.bugg.animatedcrosshair.http.WebRequests;
+import com.google.gson.JsonSyntaxException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.resources.FolderResourcePack;
 import net.minecraft.client.resources.IResourcePack;
+import net.minecraft.util.ChatComponentTranslation;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
@@ -91,6 +93,11 @@ public class AnimatedCrosshair {
                 .setUserAgent("Minecraft Mod " + Reference.MOD_NAME + " - " + Reference.VERSION)
                 .build();
 
+        // Create and start the message buffer
+        messageBuffer = new MessageBuffer();
+        messageBuffer.start();
+
+        // Create the resource pack folder & load default assets
         File resourcePackRoot;
         try {
             resourcePackRoot = ConfigUtil.createAssetsFolder();
@@ -101,13 +108,22 @@ public class AnimatedCrosshair {
             return;
         }
 
+        // Load the config
         try {
             config = Configuration.load();
-        } catch (IOException e) {
-            System.out.println("Caught exception while loading the config");
+        } catch (JsonSyntaxException | IOException e) {
+            System.out.println("Caught exception while loading the config. Trying to repair...");
             e.printStackTrace();
+            try {
+                config = new Configuration().save();
+            } catch (IOException e1) {
+                enabled = false;
+                messageBuffer.add(messageBuffer.format(new ChatComponentTranslation("animatedcrosshair.error.invalidconfig").getUnformattedText()));
+                e1.printStackTrace();
+            }
         }
 
+        // Add the resource pack to minecraft's resource pack list
         resourcePack = new FolderResourcePack(resourcePackRoot);
         addResourcePack();
 
@@ -116,8 +132,6 @@ public class AnimatedCrosshair {
 
     @EventHandler
     public void init(FMLInitializationEvent event) {
-        messageBuffer = new MessageBuffer();
-        messageBuffer.start();
 
         // Send a web request to the website, to
         // track stats & to check for what to do next

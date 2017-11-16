@@ -2,8 +2,10 @@ package co.bugg.animatedcrosshair.gui;
 
 import co.bugg.animatedcrosshair.AnimatedCrosshair;
 import co.bugg.animatedcrosshair.Reference;
+import co.bugg.animatedcrosshair.TickDelay;
 import co.bugg.animatedcrosshair.config.ConfigUtil;
 import co.bugg.animatedcrosshair.config.Properties;
+import com.google.gson.JsonSyntaxException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiPageButtonList;
@@ -56,12 +58,10 @@ public class TechnicalGui extends GuiScreen {
             scale = properties.crosshairScale;
             frameRate = properties.frameRate;
             negativeColor = properties.negativeColor;
-        } catch (IOException e) {
+        } catch (IOException | JsonSyntaxException e) {
             e.printStackTrace();
-            Minecraft.getMinecraft().displayGuiScreen(null);
-            AnimatedCrosshair.INSTANCE.messageBuffer.add(AnimatedCrosshair.INSTANCE.messageBuffer.format("For some reason I can't access your properties file" +
-                    "right now, so you can't edit it! Either edit it with a text editor in .minecraft/" + ConfigUtil.assetsRoot + " or contact @bugfroggy, giving him" +
-                    "your Minecraft logs to report this issue."));
+            new TickDelay(() -> Minecraft.getMinecraft().displayGuiScreen(null), 0);
+            AnimatedCrosshair.INSTANCE.messageBuffer.add(AnimatedCrosshair.INSTANCE.messageBuffer.format(new ChatComponentTranslation("animatedcrosshair.error.readerror").getUnformattedText()));
         }
     }
 
