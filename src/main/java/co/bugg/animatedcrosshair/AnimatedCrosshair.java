@@ -14,7 +14,6 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -138,11 +137,6 @@ public class AnimatedCrosshair {
         ClientCommandHandler.instance.registerCommand(new CommandCrosshair());
     }
 
-    @EventHandler
-    public void postInit(FMLPostInitializationEvent event) {
-
-    }
-
     /**
      * Calculate the coordinates of the specified frame in a
      * 256x256 grid, assuming each item is 16x16.
@@ -162,6 +156,10 @@ public class AnimatedCrosshair {
         return array;
     }
 
+    /**
+     * get whatever IP the player is currently on
+     * @return Current IP, "singleplayer" if single player, or null if undetermined
+     */
     public String getCurrentIP() {
         String ip;
 
