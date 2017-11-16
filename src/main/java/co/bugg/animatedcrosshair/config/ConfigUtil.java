@@ -74,13 +74,12 @@ public class ConfigUtil {
     public static void loadDefaultAssets() throws IOException {
         final ArrayList<String> defaultCrosshairs = new ArrayList<>();
 
-        defaultCrosshairs.add("mac");
-        defaultCrosshairs.add("loading");
-        defaultCrosshairs.add("wow");
         defaultCrosshairs.add("zoom_square");
-        defaultCrosshairs.add("rainbow");
+        defaultCrosshairs.add("chroma_plus");
         defaultCrosshairs.add("blue_circle");
         defaultCrosshairs.add("shapeshift_box");
+        defaultCrosshairs.add("spinning_plus");
+        defaultCrosshairs.add("spinning_plus_fat");
         defaultCrosshairs.add("triangle_illusion");
 
         final String resourceRoot = "/default/";
