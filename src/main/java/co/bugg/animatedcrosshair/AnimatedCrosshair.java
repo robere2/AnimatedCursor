@@ -156,6 +156,10 @@ public class AnimatedCrosshair {
         return array;
     }
 
+    /**
+     * get whatever IP the player is currently on
+     * @return Current IP, "singleplayer" if single player, or null if undetermined
+     */
     public String getCurrentIP() {
         String ip;
 
