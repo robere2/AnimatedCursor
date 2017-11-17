@@ -133,6 +133,12 @@ public class ColorGui extends GuiScreen {
         }
     }
 
+    @Override
+    public void onGuiClosed() {
+        super.onGuiClosed();
+        if(crosshairFrameThread != null) crosshairFrameThread.interrupt();
+    }
+
     public class ColorGuiFormatHelper implements GuiSlider.FormatHelper {
         final String red = new TextComponentTranslation("animatedcrosshair.color.red").getUnformattedText();
         final String green = new TextComponentTranslation("animatedcrosshair.color.green").getUnformattedText();
