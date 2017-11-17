@@ -64,6 +64,7 @@ public class ConfigGui extends GuiScreen {
     public ConfigGui(String name) {
         this();
         this.name = name.toUpperCase();
+        resetProperties();
     }
 
     @Override
