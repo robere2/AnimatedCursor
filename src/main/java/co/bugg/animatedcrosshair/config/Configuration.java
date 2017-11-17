@@ -17,7 +17,7 @@ import java.nio.file.Paths;
  * Custom AnimatedCrosshair configuration
  */
 public class Configuration implements Serializable {
-    public static final String defaultCrosshairName = "zoom_square";
+    public static final String defaultCrosshairName = "default";
     /**
      * Where the configuration file is stored
      */
