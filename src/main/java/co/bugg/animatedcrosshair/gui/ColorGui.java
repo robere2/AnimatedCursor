@@ -2,6 +2,7 @@ package co.bugg.animatedcrosshair.gui;
 
 import co.bugg.animatedcrosshair.AnimatedCrosshair;
 import co.bugg.animatedcrosshair.Reference;
+import co.bugg.animatedcrosshair.ThreadFactory;
 import co.bugg.animatedcrosshair.TickDelay;
 import co.bugg.animatedcrosshair.config.ConfigUtil;
 import co.bugg.animatedcrosshair.config.Properties;
@@ -31,30 +32,30 @@ public class ColorGui extends GuiScreen {
      */
     public String name;
 
-    public int red = 255;
-    public int green = 255;
-    public int blue = 255;
-    public boolean chroma = false;
-    public boolean negativeColor = true;
+    /**
+     * Temporary properties for this crosshair
+     * modification window. Saved to the config/file
+     * if the "save" button is pressed.
+     */
+    Properties properties;
+
+    /**
+     * Thread that modifies the current frame number
+     * in the properties object.
+     * @see co.bugg.animatedcrosshair.ThreadFactory#createFramerateThread(Properties)
+     */
+    Thread crosshairFrameThread;
 
     public ColorGui(String name) {
         super();
         this.name = name;
 
-        Properties properties;
         try {
             properties = ConfigUtil.getProperties(name);
+            if(properties.colorModifier == null) properties.colorModifier = new Color(255, 255, 255);
 
-            // Only set these colors if color modifier isn't null.
-            // Otherwise, use white values on the sliders
-            if(properties.colorModifier != null) {
-                red = properties.colorModifier.getRed();
-                green = properties.colorModifier.getGreen();
-                blue = properties.colorModifier.getBlue();
-            }
-
-            chroma = properties.chromaColor;
-            negativeColor = properties.negativeColor;
+            crosshairFrameThread = ThreadFactory.createFramerateThread(properties);
+            crosshairFrameThread.start();
 
         } catch (IOException | JsonSyntaxException e) {
             e.printStackTrace();
@@ -66,6 +67,15 @@ public class ColorGui extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         drawDefaultBackground();
+
+        // Draw the sample crosshair
+        try {
+            AnimatedCrosshair.INSTANCE.drawCrosshair(this, width / 2, (int) (height / 2 - (sliderMargin + sliderHeight) * 3.5), name, properties);
+        } catch (IOException e) {
+            Minecraft.getMinecraft().displayGuiScreen(null);
+            AnimatedCrosshair.INSTANCE.messageBuffer.add(AnimatedCrosshair.INSTANCE.messageBuffer.format(new TextComponentTranslation("animatedcrosshair.error.readerror").getUnformattedText()));
+        }
+
         super.drawScreen(mouseX, mouseY, partialTicks);
 
         drawCenteredString(fontRendererObj, Reference.MOD_NAME + " " + new TextComponentTranslation("animatedcrosshair.config.configuration").getUnformattedText(), width / 2, height / 2 - (sliderMargin + sliderHeight) * 3, 0xFFFFFF);
@@ -81,16 +91,16 @@ public class ColorGui extends GuiScreen {
         ColorGuiResponder responder = new ColorGuiResponder();
         ColorGuiFormatHelper formatHelper = new ColorGuiFormatHelper();
 
-        buttonList.add(new GuiSlider(responder, buttonId, width / 2 - sliderWidth / 2, height / 2 - sliderHeight / 2 + (sliderHeight + sliderMargin) * (buttonId - 2), new TextComponentTranslation("animatedcrosshair.color.red").getUnformattedText(), 0F, 255F, red, formatHelper));
+        buttonList.add(new GuiSlider(responder, buttonId, width / 2 - sliderWidth / 2, height / 2 - sliderHeight / 2 + (sliderHeight + sliderMargin) * (buttonId - 2), new TextComponentTranslation("animatedcrosshair.color.red").getUnformattedText(), 0F, 255F, properties.colorModifier.getRed(), formatHelper));
         buttonId++;
-        buttonList.add(new GuiSlider(responder, buttonId, width / 2 - sliderWidth / 2, height / 2 - sliderHeight / 2 + (sliderHeight + sliderMargin) * (buttonId - 2), new TextComponentTranslation("animatedcrosshair.color.green").getUnformattedText(), 0F, 255F, green, formatHelper));
+        buttonList.add(new GuiSlider(responder, buttonId, width / 2 - sliderWidth / 2, height / 2 - sliderHeight / 2 + (sliderHeight + sliderMargin) * (buttonId - 2), new TextComponentTranslation("animatedcrosshair.color.green").getUnformattedText(), 0F, 255F, properties.colorModifier.getGreen(), formatHelper));
         buttonId++;
-        buttonList.add(new GuiSlider(responder, buttonId, width / 2 - sliderWidth / 2, height / 2 - sliderHeight / 2 + (sliderHeight + sliderMargin) * (buttonId - 2), new TextComponentTranslation("animatedcrosshair.color.blue").getUnformattedText(), 0F, 255F, blue, formatHelper));
+        buttonList.add(new GuiSlider(responder, buttonId, width / 2 - sliderWidth / 2, height / 2 - sliderHeight / 2 + (sliderHeight + sliderMargin) * (buttonId - 2), new TextComponentTranslation("animatedcrosshair.color.blue").getUnformattedText(), 0F, 255F, properties.colorModifier.getBlue(), formatHelper));
         buttonId++;
         // TODO
 //        buttonList.add(new GuiButton(buttonId, width / 2 - sliderWidth / 2, height / 2 - sliderHeight / 2 + (sliderHeight + sliderMargin) * (buttonId - 2), sliderWidth, sliderHeight, new ChatComponentTranslation("animatedcrosshair.color.chroma").getUnformattedText() + ": " + (chroma ? new ChatComponentTranslation("animatedcrosshair.config.enabled").getUnformattedText() : new ChatComponentTranslation("animatedcrosshair.config.disabled").getUnformattedText())));
 //        buttonId++;
-        buttonList.add(new GuiButton(buttonId, width / 2 - sliderWidth / 2, height / 2 - sliderHeight / 2 + (sliderHeight + sliderMargin) * (buttonId - 2), sliderWidth, sliderHeight, new TextComponentTranslation("animatedcrosshair.properties.negativecolor").getUnformattedText() + ": " + (negativeColor ? new TextComponentTranslation("animatedcrosshair.config.enabled").getUnformattedText() : new TextComponentTranslation("animatedcrosshair.config.disabled").getUnformattedText())));
+        buttonList.add(new GuiButton(buttonId, width / 2 - sliderWidth / 2, height / 2 - sliderHeight / 2 + (sliderHeight + sliderMargin) * (buttonId - 2), sliderWidth, sliderHeight, new TextComponentTranslation("animatedcrosshair.properties.negativecolor").getUnformattedText() + ": " + (properties.negativeColor ? new TextComponentTranslation("animatedcrosshair.config.enabled").getUnformattedText() : new TextComponentTranslation("animatedcrosshair.config.disabled").getUnformattedText())));
         buttonId++;
         buttonList.add(new GuiButton(buttonId, width / 2 - sliderWidth / 2, height / 2 - sliderHeight / 2 + (sliderHeight + sliderMargin) * (buttonId - 2), sliderWidth, sliderHeight, new TextComponentTranslation("animatedcrosshair.config.save").getUnformattedText()));
     }
@@ -100,13 +110,6 @@ public class ColorGui extends GuiScreen {
         super.actionPerformed(button);
 
         if(button.displayString.equalsIgnoreCase(new TextComponentTranslation("animatedcrosshair.config.save").getUnformattedText())) {
-            Color colorObject = new Color(red, green, blue);
-
-            // Set the color in our config properties object for this crosshair
-            Properties properties = ConfigUtil.getProperties(name);
-            properties.colorModifier = colorObject;
-            properties.chromaColor = chroma;
-            properties.negativeColor = negativeColor;
 
             // Save the properties to the config if they're supposed to be applied
             if(AnimatedCrosshair.INSTANCE.config.getCurrentCrosshairName().equalsIgnoreCase(name)) {
@@ -120,19 +123,16 @@ public class ColorGui extends GuiScreen {
 
         } else if(button.displayString.contains(new TextComponentTranslation("animatedcrosshair.color.chroma").getUnformattedText())) {
             // Swap the "Chroma Color" value
-            chroma = !chroma;
-            button.displayString = new TextComponentTranslation("animatedcrosshair.color.chroma").getUnformattedText() + ": " + (chroma ? new TextComponentTranslation("animatedcrosshair.config.enabled").getUnformattedText() : new TextComponentTranslation("animatedcrosshair.config.disabled").getUnformattedText());
+            properties.chromaColor = !properties.chromaColor;
+            button.displayString = new TextComponentTranslation("animatedcrosshair.color.chroma").getUnformattedText() + ": " + (properties.chromaColor ? new TextComponentTranslation("animatedcrosshair.config.enabled").getUnformattedText() : new TextComponentTranslation("animatedcrosshair.config.disabled").getUnformattedText());
         } else if(button.displayString.contains(new TextComponentTranslation("animatedcrosshair.properties.negativecolor").getUnformattedText())) {
             // Swap the "Negative Color" value
-            negativeColor = !negativeColor;
-            button.displayString = new TextComponentTranslation("animatedcrosshair.properties.negativecolor").getUnformattedText() + ": " + (negativeColor ? new TextComponentTranslation("animatedcrosshair.config.enabled").getUnformattedText() : new TextComponentTranslation("animatedcrosshair.config.disabled").getUnformattedText());
+            properties.negativeColor = !properties.negativeColor;
+            button.displayString = new TextComponentTranslation("animatedcrosshair.properties.negativecolor").getUnformattedText() + ": " + (properties.negativeColor ? new TextComponentTranslation("animatedcrosshair.config.enabled").getUnformattedText() : new TextComponentTranslation("animatedcrosshair.config.disabled").getUnformattedText());
         }
     }
 
     public class ColorGuiFormatHelper implements GuiSlider.FormatHelper {
-        final String red = new TextComponentTranslation("animatedcrosshair.color.red").getUnformattedText();
-        final String green = new TextComponentTranslation("animatedcrosshair.color.green").getUnformattedText();
-        final String blue = new TextComponentTranslation("animatedcrosshair.color.blue").getUnformattedText();
 
         /**
          * Text that should be displayed on the slider
@@ -168,11 +168,11 @@ public class ColorGui extends GuiScreen {
         @Override
         public void setEntryValue(int id, float value) {
             if(buttonList.get(id).displayString.contains(new TextComponentTranslation("animatedcrosshair.color.red").getUnformattedText())) {
-                red = (int) value;
+                properties.colorModifier = new Color((int) value, properties.colorModifier.getGreen(), properties.colorModifier.getBlue());
             } else if(buttonList.get(id).displayString.contains(new TextComponentTranslation("animatedcrosshair.color.green").getUnformattedText())) {
-                green = (int) value;
+                properties.colorModifier = new Color(properties.colorModifier.getRed(), (int) value, properties.colorModifier.getBlue());
             } else if(buttonList.get(id).displayString.contains(new TextComponentTranslation("animatedcrosshair.color.blue").getUnformattedText())) {
-                blue = (int) value;
+                properties.colorModifier = new Color(properties.colorModifier.getRed(), properties.colorModifier.getGreen(), (int) value);
             }
         }
 

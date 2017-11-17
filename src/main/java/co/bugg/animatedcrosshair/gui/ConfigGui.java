@@ -2,9 +2,12 @@ package co.bugg.animatedcrosshair.gui;
 
 import co.bugg.animatedcrosshair.AnimatedCrosshair;
 import co.bugg.animatedcrosshair.Reference;
+import co.bugg.animatedcrosshair.ThreadFactory;
+import co.bugg.animatedcrosshair.TickDelay;
 import co.bugg.animatedcrosshair.config.ConfigUtil;
 import co.bugg.animatedcrosshair.config.Properties;
 import com.google.gson.JsonSyntaxException;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -37,11 +40,21 @@ public class ConfigGui extends GuiScreen {
     int buttonMargin = 5;
 
     /**
+     * Thread that adjusts the frame # of the crosshair rendered
+     */
+    public Thread frameateThread;
+    /**
+     * Properties of the crosshair being rendered
+     */
+    public Properties properties;
+
+    /**
      * Instantiate with whatever crosshair is currently applied's name as button text
      */
     public ConfigGui() {
         super();
         this.name = AnimatedCrosshair.INSTANCE.config.getCurrentCrosshairName().toUpperCase();
+        resetProperties();
     }
 
     /**
@@ -56,6 +69,15 @@ public class ConfigGui extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         drawDefaultBackground();
+
+        // Draw the sample crosshair
+        try {
+            AnimatedCrosshair.INSTANCE.drawCrosshair(this, width / 2, (int) (height / 2 - (buttonHeight + buttonMargin) * 2.5), name, properties);
+        } catch (IOException e) {
+            Minecraft.getMinecraft().displayGuiScreen(null);
+            AnimatedCrosshair.INSTANCE.messageBuffer.add(AnimatedCrosshair.INSTANCE.messageBuffer.format(new TextComponentTranslation("animatedcrosshair.error.readerror").getUnformattedText()));
+        }
+
         super.drawScreen(mouseX, mouseY, partialTicks);
 
         drawCenteredString(fontRendererObj, Reference.MOD_NAME + " " + new TextComponentTranslation("animatedcrosshair.config.configuration").getUnformattedText(), width / 2, height / 2 - (buttonHeight + buttonMargin) * 2, 0xFFFFFF);
@@ -106,6 +128,8 @@ public class ConfigGui extends GuiScreen {
                 name = crosshairDisplayNames.get(currentIndex);
                 buttonList.get(2).displayString = crosshairButtonPrefix + name;
             }
+
+            resetProperties();
         } else if(button.displayString.equalsIgnoreCase(new TextComponentTranslation("animatedcrosshair.arrow.right").getUnformattedText())) {
             // Increment the index to whatever the next in the ArrayList is
             int currentIndex = crosshairDisplayNames.indexOf(name);
@@ -119,6 +143,8 @@ public class ConfigGui extends GuiScreen {
                 name = crosshairDisplayNames.get(currentIndex);
                 buttonList.get(2).displayString = crosshairButtonPrefix + name;
             }
+
+            resetProperties();
         } else if(button.displayString.equalsIgnoreCase(new TextComponentTranslation("animatedcrosshair.config.configure").getUnformattedText())) {
             mc.displayGuiScreen(new TechnicalGui(name));
         } else if(button.displayString.equalsIgnoreCase(new TextComponentTranslation("animatedcrosshair.config.save").getUnformattedText())) {
@@ -161,5 +187,21 @@ public class ConfigGui extends GuiScreen {
         }
 
         return fileList;
+    }
+
+    public void resetProperties() {
+        try {
+            // Change the properties
+            properties = ConfigUtil.getProperties(name);
+            // Reset the framerate thread
+            frameateThread = ThreadFactory.createFramerateThread(properties);
+            frameateThread.start();
+        } catch (IOException e) {
+            // Issue reading the properties file
+            e.printStackTrace();
+            new TickDelay(() -> Minecraft.getMinecraft().displayGuiScreen(null), 0);
+            AnimatedCrosshair.INSTANCE.messageBuffer.add(AnimatedCrosshair.INSTANCE.messageBuffer.format(new TextComponentTranslation("animatedcrosshair.error.readerror").getUnformattedText()));
+        }
+
     }
 }
