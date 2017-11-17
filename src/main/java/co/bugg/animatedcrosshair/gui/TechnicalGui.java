@@ -149,6 +149,12 @@ public class TechnicalGui extends GuiScreen {
         }
     }
 
+    @Override
+    public void onGuiClosed() {
+        super.onGuiClosed();
+        if(crosshairFrameThread != null) crosshairFrameThread.interrupt();
+    }
+
     public class TechnicalGuiResponder implements GuiPageButtonList.GuiResponder {
         /**
          * Called every time the value of a boolean button changes

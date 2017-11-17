@@ -74,6 +74,7 @@ public class Configuration implements Serializable {
     public Configuration setCurrentProperties(Properties currentProperties) {
         this.currentProperties = currentProperties;
 
+        if(AnimatedCrosshair.INSTANCE.framerateThread != null) AnimatedCrosshair.INSTANCE.framerateThread.interrupt();
         AnimatedCrosshair.INSTANCE.framerateThread = ThreadFactory.createFramerateThread(currentProperties);
         AnimatedCrosshair.INSTANCE.framerateThread.start();
 
