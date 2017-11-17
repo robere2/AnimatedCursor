@@ -40,6 +40,7 @@ public class ThreadFactory {
     /**
      * Creates a thread that will increment the current
      * frame number according to the framerate
+     * @param properties Properties file to increment and base timing off of
      * @return Thread
      */
     public static Thread createFramerateThread(Properties properties) {
