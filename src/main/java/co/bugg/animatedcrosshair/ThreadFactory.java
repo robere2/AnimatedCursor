@@ -1,5 +1,6 @@
 package co.bugg.animatedcrosshair;
 
+import co.bugg.animatedcrosshair.config.Properties;
 import co.bugg.animatedcrosshair.http.Response;
 import co.bugg.animatedcrosshair.http.WebRequests;
 
@@ -20,7 +21,7 @@ public class ThreadFactory {
      * @return Thread
      */
     public static Thread createPingThread() {
-        return new Thread(() -> {
+        return createBaseThread(() -> {
             while(!Thread.currentThread().isInterrupted()) {
                 try {
                     String ip = AnimatedCrosshair.INSTANCE.getCurrentIP();
@@ -39,28 +40,46 @@ public class ThreadFactory {
     /**
      * Creates a thread that will increment the current
      * frame number according to the framerate
+     * @param properties Properties file to increment and base timing off of
      * @return Thread
      */
-    public static Thread createFramerateThread() {
-        return new Thread(() -> {
+    public static Thread createFramerateThread(Properties properties) {
+        return createBaseThread(() -> {
             while(!Thread.currentThread().isInterrupted()) {
                 try {
-                    // Only run if the mod is enabled.
-                    if(AnimatedCrosshair.INSTANCE.enabled) {
-                        // Reset the frame counter if necessary
-                        if (AnimatedCrosshair.INSTANCE.frame < AnimatedCrosshair.INSTANCE.config.getCurrentProperties().frameCount - 1) {
-                            AnimatedCrosshair.INSTANCE.frame++;
-                        } else {
-                            AnimatedCrosshair.INSTANCE.frame = 0;
-                        }
+                    // Reset the frame counter if necessary
+                    if (properties.frame < properties.frameCount - 1) {
+                        properties.frame++;
+                    } else {
+                        properties.frame = 0;
                     }
 
+
                     // Sleep until the next frame needs to be rendered
-                    Thread.sleep((int) (1000.0F / AnimatedCrosshair.INSTANCE.config.getCurrentProperties().frameRate));
+                    Thread.sleep((int) (1000.0F / properties.frameRate));
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
             }
         });
+    }
+
+
+    /**
+     * Basic thread builder, which holds universal modifications
+     * to our threads
+     * @param run Runnable that the thread runs
+     * @return A new thread
+     */
+    private static Thread createBaseThread(Runnable run) {
+        return new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                run.run();
+            }
+
+
+        };
     }
 }

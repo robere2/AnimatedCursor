@@ -2,6 +2,7 @@ package co.bugg.animatedcrosshair.gui;
 
 import co.bugg.animatedcrosshair.AnimatedCrosshair;
 import co.bugg.animatedcrosshair.Reference;
+import co.bugg.animatedcrosshair.ThreadFactory;
 import co.bugg.animatedcrosshair.TickDelay;
 import co.bugg.animatedcrosshair.config.ConfigUtil;
 import co.bugg.animatedcrosshair.config.Properties;
@@ -29,30 +30,31 @@ public class TechnicalGui extends GuiScreen {
      * Crosshair name we're customizing
      */
     public String name;
+
     /**
-     * @see Properties
+     * Temporary properties for this crosshair
+     * modification window. Saved to the config/file
+     * if the "save" button is pressed.
      */
-    public float scale;
+    public Properties properties;
+
     /**
-     * @see Properties
+     * Thread that modifies the current frame number
+     * in the properties object.
+     * @see co.bugg.animatedcrosshair.ThreadFactory#createFramerateThread(Properties)
      */
-    public float frameRate;
-    /**
-     * @see Properties
-     */
-    public int frameCount;
+    Thread crosshairFrameThread;
 
     public TechnicalGui(String name) {
         super();
         this.name = name;
 
-        Properties properties;
         try {
             properties = ConfigUtil.getProperties(name);
 
-            frameCount = properties.frameCount;
-            scale = properties.crosshairScale;
-            frameRate = properties.frameRate;
+            crosshairFrameThread = ThreadFactory.createFramerateThread(properties);
+            crosshairFrameThread.start();
+
         } catch (IOException | JsonSyntaxException e) {
             e.printStackTrace();
             new TickDelay(() -> Minecraft.getMinecraft().displayGuiScreen(null), 0);
@@ -63,6 +65,14 @@ public class TechnicalGui extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         drawDefaultBackground();
+
+        try {
+            AnimatedCrosshair.INSTANCE.drawCrosshair(this, width / 2, (int) (height / 2 - (sliderMargin + sliderHeight) * 3.5), name, properties);
+        } catch (IOException e) {
+            Minecraft.getMinecraft().displayGuiScreen(null);
+            AnimatedCrosshair.INSTANCE.messageBuffer.add(AnimatedCrosshair.INSTANCE.messageBuffer.format(new ChatComponentTranslation("animatedcrosshair.error.readerror").getUnformattedText()));
+        }
+
         super.drawScreen(mouseX, mouseY, partialTicks);
 
         drawCenteredString(fontRendererObj, Reference.MOD_NAME + " " + new ChatComponentTranslation("animatedcrosshair.config.configuration").getUnformattedText(), width / 2, height / 2 - (sliderMargin + sliderHeight) * 3, 0xFFFFFF);
@@ -80,11 +90,11 @@ public class TechnicalGui extends GuiScreen {
         TechnicalGuiResponder responder = new TechnicalGuiResponder();
         TechnicalGuiFormatHelper formatHelper = new TechnicalGuiFormatHelper();
 
-        buttonList.add(new GuiSlider(responder, buttonId, width / 2 - sliderWidth / 2, height / 2 - sliderHeight / 2 + (sliderHeight + sliderMargin) * (buttonId - 2), new ChatComponentTranslation("animatedcrosshair.properties.scale").getUnformattedText(), 0.1F, 10.0F, scale, formatHelper));
+        buttonList.add(new GuiSlider(responder, buttonId, width / 2 - sliderWidth / 2, height / 2 - sliderHeight / 2 + (sliderHeight + sliderMargin) * (buttonId - 2), new ChatComponentTranslation("animatedcrosshair.properties.scale").getUnformattedText(), 0.1F, 10.0F, properties.crosshairScale, formatHelper));
         buttonId++;
-        buttonList.add(new GuiSlider(responder, buttonId, width / 2 - sliderWidth / 2, height / 2 - sliderHeight / 2 + (sliderHeight + sliderMargin) * (buttonId - 2), new ChatComponentTranslation("animatedcrosshair.properties.framerate").getUnformattedText(), 0F, 100F, frameRate, formatHelper));
+        buttonList.add(new GuiSlider(responder, buttonId, width / 2 - sliderWidth / 2, height / 2 - sliderHeight / 2 + (sliderHeight + sliderMargin) * (buttonId - 2), new ChatComponentTranslation("animatedcrosshair.properties.framerate").getUnformattedText(), 0F, 100F, properties.frameRate, formatHelper));
         buttonId++;
-        buttonList.add(new GuiSlider(responder, buttonId, width / 2 - sliderWidth / 2, height / 2 - sliderHeight / 2 + (sliderHeight + sliderMargin) * (buttonId - 2), new ChatComponentTranslation("animatedcrosshair.properties.framecount").getUnformattedText(), 1F, 256F, frameCount, formatHelper));
+        buttonList.add(new GuiSlider(responder, buttonId, width / 2 - sliderWidth / 2, height / 2 - sliderHeight / 2 + (sliderHeight + sliderMargin) * (buttonId - 2), new ChatComponentTranslation("animatedcrosshair.properties.framecount").getUnformattedText(), 1F, 256F, properties.frameCount, formatHelper));
         buttonId++;
         buttonList.add(new GuiButton(buttonId, width / 2 - sliderWidth / 2, height / 2 - sliderHeight / 2 + (sliderHeight + sliderMargin) * (buttonId - 2), sliderWidth, sliderHeight, new ChatComponentTranslation("animatedcrosshair.color.colors").getUnformattedText()));
         buttonId++;
@@ -96,11 +106,6 @@ public class TechnicalGui extends GuiScreen {
         super.actionPerformed(button);
 
         if(button.displayString.equalsIgnoreCase(new ChatComponentTranslation("animatedcrosshair.config.save").getUnformattedText())) {
-            // Convert the properties into an object
-            Properties properties = ConfigUtil.getProperties(name);
-            properties.frameRate = frameRate;
-            properties.frameCount = frameCount;
-            properties.crosshairScale = scale;
 
             // Save the properties to the config if they're supposed to be applied
             if(AnimatedCrosshair.INSTANCE.config.getCurrentCrosshairName().equalsIgnoreCase(name)) {
@@ -163,11 +168,11 @@ public class TechnicalGui extends GuiScreen {
         @Override
         public void onTick(int id, float value) {
             if(buttonList.get(id).displayString.contains(new ChatComponentTranslation("animatedcrosshair.properties.scale").getUnformattedText())) {
-                scale = value;
+                properties.crosshairScale = value;
             } else if(buttonList.get(id).displayString.contains(new ChatComponentTranslation("animatedcrosshair.properties.framerate").getUnformattedText())) {
-                frameRate = value;
+                properties.frameRate = value;
             } else if(buttonList.get(id).displayString.contains(new ChatComponentTranslation("animatedcrosshair.properties.framecount").getUnformattedText())) {
-                frameCount = (int) value;
+                properties.frameCount = (int) value;
             }
         }
 

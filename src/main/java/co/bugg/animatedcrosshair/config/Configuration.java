@@ -1,6 +1,7 @@
 package co.bugg.animatedcrosshair.config;
 
 import co.bugg.animatedcrosshair.AnimatedCrosshair;
+import co.bugg.animatedcrosshair.ThreadFactory;
 import com.google.gson.Gson;
 import net.minecraft.util.ChatComponentTranslation;
 
@@ -72,6 +73,10 @@ public class Configuration implements Serializable {
      */
     public Configuration setCurrentProperties(Properties currentProperties) {
         this.currentProperties = currentProperties;
+
+        AnimatedCrosshair.INSTANCE.framerateThread = ThreadFactory.createFramerateThread(currentProperties);
+        AnimatedCrosshair.INSTANCE.framerateThread.start();
+
         return this;
     }
 
