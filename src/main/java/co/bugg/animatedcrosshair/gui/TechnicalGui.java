@@ -124,6 +124,12 @@ public class TechnicalGui extends GuiScreen {
         }
     }
 
+    @Override
+    public void onGuiClosed() {
+        super.onGuiClosed();
+        if(crosshairFrameThread != null) crosshairFrameThread.interrupt();
+    }
+
     @ParametersAreNonnullByDefault
     @MethodsReturnNonnullByDefault
     public class TechnicalGuiFormatHelper implements GuiSlider.FormatHelper {

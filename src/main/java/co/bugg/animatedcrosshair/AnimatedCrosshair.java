@@ -149,6 +149,7 @@ public class AnimatedCrosshair {
         }).start();
 
         // Start the frame incrementation thread
+        if(AnimatedCrosshair.INSTANCE.framerateThread != null) framerateThread.interrupt();
         AnimatedCrosshair.INSTANCE.framerateThread = ThreadFactory.createFramerateThread(config.getCurrentProperties());
         AnimatedCrosshair.INSTANCE.framerateThread.start();
 

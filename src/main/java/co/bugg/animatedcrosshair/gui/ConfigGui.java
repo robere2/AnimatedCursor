@@ -169,6 +169,12 @@ public class ConfigGui extends GuiScreen {
         }
     }
 
+    @Override
+    public void onGuiClosed() {
+        super.onGuiClosed();
+        if(frameateThread != null) frameateThread.interrupt();
+    }
+
     /**
      * Gets all .png files in the specified folder and returns an ArrayList of them
      * @see "https://stackoverflow.com/questions/1844688/how-to-read-all-files-in-a-folder-from-java"
@@ -201,6 +207,7 @@ public class ConfigGui extends GuiScreen {
             // Change the properties
             properties = ConfigUtil.getProperties(name);
             // Reset the framerate thread
+            if(frameateThread != null) frameateThread.interrupt();
             frameateThread = ThreadFactory.createFramerateThread(properties);
             frameateThread.start();
         } catch (IOException e) {
