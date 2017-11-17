@@ -189,6 +189,12 @@ public class ConfigGui extends GuiScreen {
         return fileList;
     }
 
+    /**
+     * Reset the properties object to have the latest data
+     * about the provided crosshair name. This also restarts
+     * the framerate thread, and is intended to be used
+     * whenever the user changes what crosshair is selected.
+     */
     public void resetProperties() {
         try {
             // Change the properties
