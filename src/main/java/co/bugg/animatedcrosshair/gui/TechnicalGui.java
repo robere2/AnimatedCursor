@@ -79,8 +79,8 @@ public class TechnicalGui extends GuiScreen {
 
         drawCenteredString(fontRenderer, Reference.MOD_NAME + " " + new TextComponentTranslation("animatedcrosshair.config.configuration").getUnformattedText(), width / 2, height / 2 - (sliderMargin + sliderHeight) * 3, 0xFFFFFF);
         drawCenteredString(fontRenderer, AnimatedCrosshair.INSTANCE.credits, width / 2, height - 10, 0xFFFFFF);
-        drawCenteredString(fontRenderer, new TextComponentTranslation("animatedcrosshair.config.precisevalues").getUnformattedText(), width / 2, (int) (height / 2 + (sliderMargin + sliderHeight) * 1.6), 0xFFFFFF);
-        drawCenteredString(fontRenderer, ".minecraft/" + ConfigUtil.assetsRoot, width / 2, (int) (height / 2 + (sliderMargin + sliderHeight) * 2), 0xFFFFFF);
+        //drawCenteredString(fontRenderer, new TextComponentTranslation("animatedcrosshair.config.precisevalues").getUnformattedText(), width / 2, (int) (height / 2 + (sliderMargin + sliderHeight) * 1.6), 0xFFFFFF);
+        //drawCenteredString(fontRenderer, ".minecraft/" + ConfigUtil.assetsRoot, width / 2, (int) (height / 2 + (sliderMargin + sliderHeight) * 2), 0xFFFFFF);
     }
 
     @Override
@@ -100,7 +100,7 @@ public class TechnicalGui extends GuiScreen {
         buttonId++;
         buttonList.add(new GuiButton(buttonId, width / 2 - sliderWidth / 2, height / 2 - sliderHeight / 2 + (sliderHeight + sliderMargin) * (buttonId - 2), sliderWidth, sliderHeight, new TextComponentTranslation("animatedcrosshair.color.colors").getUnformattedText()));
         buttonId++;
-        buttonList.add(new GuiButton(buttonId, width / 2 - sliderWidth / 2, height / 2 - sliderHeight / 2 + (sliderHeight + sliderMargin) * (buttonId - 1), sliderWidth, sliderHeight, new TextComponentTranslation("animatedcrosshair.config.save").getUnformattedText()));
+        buttonList.add(new GuiButton(buttonId, width / 2 - sliderWidth / 2, height / 2 - sliderHeight / 2 + (sliderHeight + sliderMargin) * (buttonId - 2), sliderWidth, sliderHeight, new TextComponentTranslation("animatedcrosshair.config.save").getUnformattedText()));
     }
 
     @Override
