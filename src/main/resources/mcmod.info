@@ -1,13 +1,14 @@
 [
-{
-  "modid": "animatedcrosshair",
-  "name": "Animated Crosshair",
-  "description": "Animate your crosshair in Minecraft",
-  "version": "${version}",
-  "mcversion": "${mcversion}",
-  "url": "",
-  "updateUrl": "",
-  "authorList": ["bugfroggy"],
-  "logoFile": ""
-}
+    {
+      "modid": "animatedcrosshair",
+      "name": "Animated Crosshair",
+      "description": "Customize your crosshair in Minecraft",
+      "version": "${version}",
+      "mcversion": "${mcversion}",
+      "url": "https://aws.bugg.co/mods/animatedcrosshair",
+      "updateUrl": "https://aws.bugg.co/mods/animatedcrosshair",
+      "authorList": ["bugfroggy"],
+      "credits": "Tris for beta testing, 10Pi for the idea.",
+      "logoFile": "crosshair-shadow.png"
+    }
 ]
