@@ -34,10 +34,6 @@ public class TechnicalGui extends GuiScreen {
     /**
      * @see Properties
      */
-    public boolean negativeColor;
-    /**
-     * @see Properties
-     */
     public float scale;
     /**
      * @see Properties
@@ -59,7 +55,6 @@ public class TechnicalGui extends GuiScreen {
             frameCount = properties.frameCount;
             scale = properties.crosshairScale;
             frameRate = properties.frameRate;
-            negativeColor = properties.negativeColor;
         } catch (IOException | JsonSyntaxException e) {
             e.printStackTrace();
             new TickDelay(() -> Minecraft.getMinecraft().displayGuiScreen(null), 0);
@@ -93,7 +88,7 @@ public class TechnicalGui extends GuiScreen {
         buttonId++;
         buttonList.add(new GuiSlider(responder, buttonId, width / 2 - sliderWidth / 2, height / 2 - sliderHeight / 2 + (sliderHeight + sliderMargin) * (buttonId - 2), new TextComponentTranslation("animatedcrosshair.properties.framecount").getUnformattedText(), 1F, 256F, frameCount, formatHelper));
         buttonId++;
-        buttonList.add(new GuiButton(buttonId, width / 2 - sliderWidth / 2, height / 2 - sliderHeight / 2 + (sliderHeight + sliderMargin) * (buttonId - 2), sliderWidth, sliderHeight, new TextComponentTranslation("animatedcrosshair.properties.negativecolor").getUnformattedText() + ": " + (negativeColor ? new TextComponentTranslation("animatedcrosshair.config.enabled").getUnformattedText() : new TextComponentTranslation("animatedcrosshair.config.disabled").getUnformattedText())));
+        buttonList.add(new GuiButton(buttonId, width / 2 - sliderWidth / 2, height / 2 - sliderHeight / 2 + (sliderHeight + sliderMargin) * (buttonId - 2), sliderWidth, sliderHeight, new TextComponentTranslation("animatedcrosshair.color.colors").getUnformattedText()));
         buttonId++;
         buttonList.add(new GuiButton(buttonId, width / 2 - sliderWidth / 2, height / 2 - sliderHeight / 2 + (sliderHeight + sliderMargin) * (buttonId - 1), sliderWidth, sliderHeight, new TextComponentTranslation("animatedcrosshair.config.save").getUnformattedText()));
     }
@@ -104,8 +99,7 @@ public class TechnicalGui extends GuiScreen {
 
         if(button.displayString.equalsIgnoreCase(new TextComponentTranslation("animatedcrosshair.config.save").getUnformattedText())) {
             // Convert the properties into an object
-            Properties properties = new Properties();
-            properties.negativeColor = negativeColor;
+            Properties properties = ConfigUtil.getProperties(name);
             properties.frameRate = frameRate;
             properties.frameCount = frameCount;
             properties.crosshairScale = scale;
@@ -120,10 +114,8 @@ public class TechnicalGui extends GuiScreen {
 
             Minecraft.getMinecraft().displayGuiScreen(new ConfigGui(name));
 
-        } else if(button.displayString.contains(new TextComponentTranslation("animatedcrosshair.properties.negativecolor").getUnformattedText())) {
-            // Swap the "Negative Color" value
-            negativeColor = !negativeColor;
-            button.displayString = new TextComponentTranslation("animatedcrosshair.properties.negativecolor").getUnformattedText() + ": " + (negativeColor ? new TextComponentTranslation("animatedcrosshair.config.enabled").getUnformattedText() : new TextComponentTranslation("animatedcrosshair.config.disabled").getUnformattedText());
+        }  else if(button.displayString.contains(new TextComponentTranslation("animatedcrosshair.color.colors").getUnformattedText())) {
+            Minecraft.getMinecraft().displayGuiScreen(new ColorGui(name));
         }
     }
 

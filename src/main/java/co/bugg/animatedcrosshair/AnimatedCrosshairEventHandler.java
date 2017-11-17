@@ -1,6 +1,7 @@
 package co.bugg.animatedcrosshair;
 
 import co.bugg.animatedcrosshair.config.ConfigUtil;
+import co.bugg.animatedcrosshair.config.Properties;
 import co.bugg.animatedcrosshair.http.Response;
 import co.bugg.animatedcrosshair.http.WebRequests;
 import net.minecraft.client.Minecraft;
@@ -12,6 +13,7 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 
+import java.awt.*;
 import java.io.File;
 
 /**
@@ -35,13 +37,22 @@ public class AnimatedCrosshairEventHandler {
             GlStateManager.enableBlend();
             GlStateManager.enableAlpha();
 
-            double scale = AnimatedCrosshair.INSTANCE.config.getCurrentProperties().crosshairScale;
+            Properties properties = AnimatedCrosshair.INSTANCE.config.getCurrentProperties();
+            double scale = properties.crosshairScale;
+            Color colorModifier = properties.colorModifier;
+
             int[] coords = AnimatedCrosshair.INSTANCE.calculateCoords(AnimatedCrosshair.INSTANCE.frame);
 
             Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation(Reference.MOD_ID, AnimatedCrosshair.INSTANCE.config.getCurrentCrosshairName().toLowerCase() + ".png"));
             GlStateManager.scale(scale, scale, scale);
 
             if(AnimatedCrosshair.INSTANCE.config.getCurrentProperties().negativeColor) GlStateManager.tryBlendFuncSeparate(775, 769, 1, 0);
+
+            // Modify the color to be what's in the config, or white if no value
+            if(colorModifier != null)
+                GlStateManager.color((float) colorModifier.getRed() / 255.0F, (float) colorModifier.getGreen() / 255.0F, (float) colorModifier.getBlue() / 255.0F);
+            else
+                GlStateManager.color(1, 1, 1);
 
             gui.drawTexturedModalRect(
                     (int) (((scaledResolution.getScaledWidth() / 2) / scale) - 16 / 2),
@@ -51,6 +62,8 @@ public class AnimatedCrosshairEventHandler {
                     16,
                     16
             );
+
+            GlStateManager.color(1, 1, 1);
 
             if(AnimatedCrosshair.INSTANCE.config.getCurrentProperties().negativeColor) GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
 

@@ -1,5 +1,6 @@
 package co.bugg.animatedcrosshair.config;
 
+import java.awt.*;
 import java.io.Serializable;
 
 /**
@@ -15,12 +16,22 @@ public class Properties implements Serializable {
      */
     public float frameRate;
     /**
-     * Whether the color of the crosshair should go negative on
-     * white backgrounds
+     * Whether the color of the crosshair should go
+     * negative on white backgrounds
      */
     public boolean negativeColor;
     /**
      * Scale of the crosshair
      */
     public float crosshairScale;
+    /**
+     * Color modifier that is applied when rendering the crosshair
+     */
+    public Color colorModifier;
+    /**
+     * TODO
+     * Whether or not the crosshair should cycle through the
+     * colors of the rainbow
+     */
+    public boolean chromaColor;
 }
