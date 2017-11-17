@@ -7,6 +7,12 @@ animatedcrosshair.config.configure=Configure
 animatedcrosshair.config.enabled=Enabled
 animatedcrosshair.config.disabled=Disabled
 
+animatedcrosshair.color.colors=Colors
+animatedcrosshair.color.red=Red
+animatedcrosshair.color.green=Green
+animatedcrosshair.color.blue=Blue
+animatedcrosshair.color.chroma=Chroma
+
 animatedcrosshair.config.precisevalues=Precise values can be edited in
 
 animatedcrosshair.chat.prefix=[AnimatedCrosshair]
