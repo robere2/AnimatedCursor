@@ -8,6 +8,10 @@ import java.io.Serializable;
  */
 public class Properties implements Serializable {
     /**
+     * Current frame number when being rendered
+     */
+    public int frame;
+    /**
      * Zero-indexed number of frames in the crosshair
      */
     public int frameCount;

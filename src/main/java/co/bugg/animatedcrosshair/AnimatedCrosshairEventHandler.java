@@ -1,20 +1,19 @@
 package co.bugg.animatedcrosshair;
 
 import co.bugg.animatedcrosshair.config.ConfigUtil;
-import co.bugg.animatedcrosshair.config.Properties;
+import co.bugg.animatedcrosshair.config.Configuration;
 import co.bugg.animatedcrosshair.http.Response;
 import co.bugg.animatedcrosshair.http.WebRequests;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 
-import java.awt.*;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 /**
  * Contains all the event handlers for the mod
@@ -33,44 +32,18 @@ public class AnimatedCrosshairEventHandler {
 
             ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
 
-            GlStateManager.pushMatrix();
-            GlStateManager.enableBlend();
-            GlStateManager.enableAlpha();
-
-            Properties properties = AnimatedCrosshair.INSTANCE.config.getCurrentProperties();
-            double scale = properties.crosshairScale;
-            Color colorModifier = properties.colorModifier;
-
-            int[] coords = AnimatedCrosshair.INSTANCE.calculateCoords(AnimatedCrosshair.INSTANCE.frame);
-
-            Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation(Reference.MOD_ID, AnimatedCrosshair.INSTANCE.config.getCurrentCrosshairName().toLowerCase() + ".png"));
-            GlStateManager.scale(scale, scale, scale);
-
-            if(AnimatedCrosshair.INSTANCE.config.getCurrentProperties().negativeColor) GlStateManager.tryBlendFuncSeparate(775, 769, 1, 0);
-
-            // Modify the color to be what's in the config, or white if no value
-            if(colorModifier != null)
-                GlStateManager.color((float) colorModifier.getRed() / 255.0F, (float) colorModifier.getGreen() / 255.0F, (float) colorModifier.getBlue() / 255.0F);
-            else
-                GlStateManager.color(1, 1, 1);
-
-
-            gui.drawTexturedModalRect(
-                    (int) (((scaledResolution.getScaledWidth() / 2) / scale) - 16 / 2),
-                    (int) (((scaledResolution.getScaledHeight() / 2) / scale) - 16 / 2),
-                    coords[1],
-                    coords[0],
-                    16,
-                    16
-            );
-
-            GlStateManager.color(1, 1, 1);
-
-            if(AnimatedCrosshair.INSTANCE.config.getCurrentProperties().negativeColor) GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-
-            GlStateManager.disableBlend();
-            GlStateManager.disableAlpha();
-            GlStateManager.popMatrix();
+            try {
+                AnimatedCrosshair.INSTANCE.drawCrosshair(gui, scaledResolution.getScaledWidth() / 2, scaledResolution.getScaledHeight() / 2, AnimatedCrosshair.INSTANCE.config.getCurrentCrosshairName(), AnimatedCrosshair.INSTANCE.config.getCurrentProperties());
+            } catch (IOException e) {
+                System.out.println("Current crosshair can't be rendered! Trying to go back to default...");
+                try {
+                    AnimatedCrosshair.INSTANCE.config.setCurrentCrosshairName(Configuration.defaultCrosshairName);
+                } catch (FileNotFoundException e1) {
+                    e1.printStackTrace();
+                    System.out.println("I wasn't able to recover, and the default crosshair couldn't be rendered. Shutting down mod.");
+                    AnimatedCrosshair.INSTANCE.enabled = false;
+                }
+            }
 
             event.setCanceled(true);
         }

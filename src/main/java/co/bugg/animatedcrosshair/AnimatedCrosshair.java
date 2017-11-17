@@ -3,13 +3,17 @@ package co.bugg.animatedcrosshair;
 import co.bugg.animatedcrosshair.command.CommandCrosshair;
 import co.bugg.animatedcrosshair.config.ConfigUtil;
 import co.bugg.animatedcrosshair.config.Configuration;
+import co.bugg.animatedcrosshair.config.Properties;
 import co.bugg.animatedcrosshair.http.Response;
 import co.bugg.animatedcrosshair.http.WebRequests;
 import com.google.gson.JsonSyntaxException;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.multiplayer.ServerData;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.FolderResourcePack;
 import net.minecraft.client.resources.IResourcePack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
@@ -21,6 +25,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -41,10 +46,6 @@ public class AnimatedCrosshair {
      */
     @Mod.Instance
     public static AnimatedCrosshair INSTANCE = new AnimatedCrosshair();
-    /**
-     * Current frame being rendered
-     */
-    public int frame;
     /**
      * Mod configuration
      */
@@ -145,7 +146,7 @@ public class AnimatedCrosshair {
         }).start();
 
         // Start the frame incrementation thread
-        AnimatedCrosshair.INSTANCE.framerateThread = ThreadFactory.createFramerateThread();
+        AnimatedCrosshair.INSTANCE.framerateThread = ThreadFactory.createFramerateThread(config.getCurrentProperties());
         AnimatedCrosshair.INSTANCE.framerateThread.start();
 
         ClientCommandHandler.instance.registerCommand(new CommandCrosshair());
@@ -222,5 +223,53 @@ public class AnimatedCrosshair {
 
         // Refresh the resources of the game
         Minecraft.getMinecraft().refreshResources();
+    }
+
+    /**
+     * Draw a provided crosshair on the provided screen at the provided coords
+     * @param gui GUI to draw on
+     * @param posX X position to draw at (scaling & centering done inside method)
+     * @param posY Y position to draw at (scaling & centering done inside method)
+     * @param name Name of the crosshair to draw
+     * @param properties Properties to draw the crosshair with
+     * @throws IOException Issue drawing the crosshair because its properties file isn't found
+     */
+    public void drawCrosshair(Gui gui, int posX, int posY, String name, Properties properties) throws IOException {
+        GlStateManager.pushMatrix();
+        GlStateManager.enableBlend();
+        GlStateManager.enableAlpha();
+
+        double scale = properties.crosshairScale;
+        Color colorModifier = properties.colorModifier;
+
+        int[] coords = calculateCoords(properties.frame);
+
+        Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation(Reference.MOD_ID, name + ".png"));
+        GlStateManager.scale(scale, scale, scale);
+
+        if(properties.negativeColor) GlStateManager.tryBlendFuncSeparate(775, 769, 1, 0);
+
+        // Modify the color to be what's in the config, or white if no value
+        if(colorModifier != null)
+            GlStateManager.color((float) colorModifier.getRed() / 255.0F, (float) colorModifier.getGreen() / 255.0F, (float) colorModifier.getBlue() / 255.0F);
+        else
+            GlStateManager.color(1, 1, 1);
+
+        gui.drawTexturedModalRect(
+                (int) (posX / scale - 16 / 2),
+                (int) (posY / scale - 16 / 2),
+                coords[1],
+                coords[0],
+                16,
+                16
+        );
+
+        GlStateManager.color(1, 1, 1);
+
+        if(properties.negativeColor) GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+
+        GlStateManager.disableBlend();
+        GlStateManager.disableAlpha();
+        GlStateManager.popMatrix();
     }
 }
