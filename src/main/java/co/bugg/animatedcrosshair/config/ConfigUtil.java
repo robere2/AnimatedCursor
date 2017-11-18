@@ -77,6 +77,7 @@ public class ConfigUtil {
         defaultCrosshairs.add("zoom_square");
         defaultCrosshairs.add("chroma_plus");
         defaultCrosshairs.add("middle_circle");
+        defaultCrosshairs.add("default");
         defaultCrosshairs.add("shapeshift_box");
         defaultCrosshairs.add("spinning_plus");
         defaultCrosshairs.add("spinning_plus_fat");
